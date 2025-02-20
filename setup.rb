@@ -22,10 +22,12 @@ module OS
 
 def run_setup
 
+    puts "starting setup..."
     puts `docker-compose -f docker-compose/docker-compose.yml up -d `
-    output = `rpk --version`
-    puts output
-    unless output.start_with? "rpk version"
+    begin
+        output = `rpk --version`
+        puts output
+    rescue
         if OS.mac?
             puts "no redpanda CLI found. Install with brew? (y/n)"
             input = gets.chomp.downcase
@@ -35,6 +37,8 @@ def run_setup
                 return
             end
         elsif OS.linux?
+            # None of this is tested btw, glhf
+            puts "it looks like you're running this on a linux box. I didn't test any of this, glhf"
             puts "no redpanda CLI found. Install? (y/n)"
             input = gets.chomp.downcase
             if input == "y"
@@ -72,6 +76,7 @@ def run_setup
     unless output.include? "people"
         puts `rpk topic create people -p 3`
     end
+    puts "setup complete! You're ready to start the application now."
 end
 
 run_setup
